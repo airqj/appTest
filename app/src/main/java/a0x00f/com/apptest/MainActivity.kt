@@ -11,25 +11,28 @@ import java.net.URL
 import android.view.WindowManager
 import android.graphics.Bitmap
 import android.os.Handler
+import android.util.Log
+import android.widget.FrameLayout
+import java.util.*
 
 
 class MainActivity : AppCompatActivity() {
 
     private val imgURL = "http://ww1.sinaimg.cn/mw690/005Fj2RDgw1f9mvl4pivvj30c82ougw3.jpg"
-    private var y:Int = 0
     private var hadle = Handler()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
+//        setContentView(R.layout.activity_main)
 
         val policy = StrictMode.ThreadPolicy.Builder().permitAll().build()
         StrictMode.setThreadPolicy(policy)
-        setContentView(CustomView1(this))
-        //setContentView(R.layout.activity_main)
+        val cusTomView = CustomView1(this)
+//        setContentView(cusTomView)
+        setContentView(R.layout.activity_main)
     }
 
-    fun resizeBitmap(bitmap: Bitmap?, w: Int, h: Int): Bitmap? {
+    fun resizeBitmap(bitmap: Bitmap?, w: Int, h: Int,y:Int): Bitmap? {
         if (bitmap != null) {
             val width = bitmap.width
             val height = bitmap.height
@@ -51,6 +54,7 @@ class MainActivity : AppCompatActivity() {
     internal inner class CustomView1(context: Context) : View(context),Runnable {
 
         var paint: Paint
+        var vy: Int = 0
 
         init {
             paint = Paint() //设置一个笔刷大小是3的黄色的画笔
@@ -58,7 +62,7 @@ class MainActivity : AppCompatActivity() {
             paint.strokeJoin = Paint.Join.ROUND
             paint.strokeCap = Paint.Cap.ROUND
             paint.strokeWidth = 3f
-            this.handler.postDelayed(this,500)
+            hadle.postDelayed(this,10)
         }
 
         var wm: WindowManager = getContext().getSystemService(
@@ -74,16 +78,16 @@ class MainActivity : AppCompatActivity() {
         override fun onDraw(canvas: Canvas) {
 
             val rectF: RectF = RectF(0F,0F,canvas?.width.toFloat(),canvas?.height.toFloat())
-            val bitmap = resizeBitmap(bmp,width0,height0)
+            vy++
+            val bitmap = resizeBitmap(bmp,width0,height0,vy)
             canvas.drawBitmap(bitmap,null,rectF,null)
         }
 
         override fun run() {
-            y.plus(1)
             // 重新绘制View
-            this.invalidate();
+            this.invalidate()
             // 重新设置定时器，在60秒后调用run方法
-            this.handler.postDelayed(this, 1000)
+            hadle.postDelayed(this,10)
         }
     }
 }
